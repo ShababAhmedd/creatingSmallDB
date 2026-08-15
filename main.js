@@ -1,4 +1,9 @@
-import { userRegistration } from "./index.js";
+import {
+  userRegistration,
+  userLogin,
+  getUserBlogs,
+  searchBlog,
+} from "./index.js";
 import { closeDB, initDB } from "./db.js";
 import readline from "readline";
 
@@ -19,6 +24,51 @@ function askQuestion(query) {
   });
 }
 
+async function userMenu(loggedInUser) {
+  let exit = false;
+
+  while (!exit) {
+    const choise = (
+      await askQuestion(
+        "\nUser Menu:\n1. View Your Blogs\n2. Search Blog by ID/Title\n3. Create Blog\n4. Update Blog\n5. Delete Blog\n6. Logout\n",
+      )
+    ).trim();
+
+    if (choise == 1) {
+      const userBlogs = await getUserBlogs(loggedInUser.id);
+      if (userBlogs.length === 0) {
+        console.log("No blogs are found");
+      } else {
+        console.log("\nYour Blogs: ");
+        userBlogs.forEach((blog) => {
+          console.log(`ID: ${blog.id} - ${blog.blogTitle}`);
+        });
+      }
+    } else if (choise == 2) {
+      const searchTerm = (await askQuestion("Enter blog ID or title: ")).trim();
+      const blog = await searchBlog(searchTerm);
+      if (!blog) {
+        console.log("No blog found");
+      } else {
+        console.log(
+          `\nID: ${blog.id}\nTitle: ${blog.blogTitle}\nCategory: ${blog.category}\nContent: ${blog.blog}`,
+        );
+      }
+    } else if (choise == 3) {
+      // Create Blog - Part 3
+    } else if (choise == 4) {
+      // Update Blog - Part 3
+    } else if (choise == 5) {
+      // Delete Blog - Part 36
+    } else if (choise == 6) {
+      console.log("Logging out...");
+      exit = true;
+    } else {
+      console.log("Invalid Option");
+    }
+  }
+}
+
 async function main() {
   const option = (
     await askQuestion(
@@ -29,7 +79,14 @@ async function main() {
   if (option == 1) {
     // View All Blogs - to be implemented later
   } else if (option == 2) {
-    // Login - to be implemented later
+    const email = await askQuestion("Please enter your email: ");
+    const password = await askQuestion("Please enter your password: ");
+    const login = await userLogin(email, password);
+    if (login) {
+      console.log(`Welcome back, ${login.firstName}!`);
+      console.log(`Role: ${login.role}`);
+      await userMenu(login);
+    }
   } else if (option == 3) {
     const firstName = await askQuestion("Enter your first name: ");
     const lastName = await askQuestion("Enter your last name: ");

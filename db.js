@@ -64,7 +64,7 @@ const blogs = sequelize.define(
     },
     userId: {
       type: DataTypes.INTEGER,
-    //   autoIncrement: true,
+      //   autoIncrement: true,
     },
     blogTitle: {
       type: DataTypes.STRING,
@@ -85,6 +85,9 @@ const blogs = sequelize.define(
   },
 );
 
+user.hasMany(blogs, { foreignKey: "userId" });
+blogs.belongsTo(user, { foreignKey: "userId" });
+
 async function initDB() {
   await sequelize.authenticate();
   await sequelize.sync();
@@ -95,4 +98,4 @@ async function closeDB() {
   await sequelize.close();
 }
 
-export { sequelize, user, initDB, closeDB };
+export { sequelize, user, initDB, closeDB, blogs };
