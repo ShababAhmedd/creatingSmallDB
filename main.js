@@ -1,0 +1,49 @@
+import { userRegistration } from "./index.js";
+import { closeDB, initDB } from "./db.js";
+import readline from "readline";
+
+await initDB();
+
+console.log("Welcome to blogDB!");
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+function askQuestion(query) {
+  return new Promise((resolve) => {
+    rl.question(query, (answer) => {
+      resolve(answer);
+    });
+  });
+}
+
+async function main() {
+  const option = (
+    await askQuestion(
+      "Please select one of the following options:\n1. View All Blogs\n2. Login\n3. Register\n(Make sure you only enter the option number)\n",
+    )
+  ).trim();
+
+  if (option == 1) {
+    // View All Blogs - to be implemented later
+  } else if (option == 2) {
+    // Login - to be implemented later
+  } else if (option == 3) {
+    const firstName = await askQuestion("Enter your first name: ");
+    const lastName = await askQuestion("Enter your last name: ");
+    const email = await askQuestion("Enter your email: ");
+    const phone = await askQuestion("Enter your phone number: ");
+    const password = await askQuestion("Enter your password: ");
+
+    await userRegistration(firstName, lastName, email, phone, password);
+  } else {
+    console.log("Invalid Option");
+  }
+
+  rl.close();
+  await closeDB();
+}
+
+await main();
