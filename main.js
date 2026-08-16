@@ -3,6 +3,9 @@ import {
   userLogin,
   getUserBlogs,
   searchBlog,
+  createBlog,
+  updateBlog,
+  deleteBlog,
 } from "./index.js";
 import { closeDB, initDB } from "./db.js";
 import readline from "readline";
@@ -55,11 +58,32 @@ async function userMenu(loggedInUser) {
         );
       }
     } else if (choise == 3) {
-      // Create Blog - Part 3
+      const blogTitle = await askQuestion("Enter the blog title: ");
+      const blog = await askQuestion("Enter blog content: ");
+      const category = await askQuestion("Enter blog category: ");
+      await createBlog(loggedInUser.id, blogTitle, blog, category);
+      console.log("Blog created successfully");
     } else if (choise == 4) {
-      // Update Blog - Part 3
+      const blogId = (await askQuestion("Enter blog ID to update: ")).trim();
+      const blogTitle = await askQuestion("Enter new blog title: ");
+      const blog = await askQuestion("Enter new blog content: ");
+      const category = await askQuestion("Enter new category: ");
+      const updated = await updateBlog(
+        loggedInUser.id,
+        blogId,
+        blogTitle,
+        blog,
+        category,
+      );
+      if (updated) {
+        console.log("Blog updated successfully");
+      }
     } else if (choise == 5) {
-      // Delete Blog - Part 36
+      const blogId = (await askQuestion("Enter blog ID to delete: ")).trim();
+      const deleted = await deleteBlog(loggedInUser.id, blogId);
+      if (deleted) {
+        console.log("Blog deleted successfully");
+      }
     } else if (choise == 6) {
       console.log("Logging out...");
       exit = true;

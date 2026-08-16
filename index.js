@@ -59,4 +59,55 @@ async function searchBlog(searchTerm) {
   return blog;
 }
 
-export { userRegistration, userLogin, getUserBlogs, searchBlog };
+async function createBlog(userId, blogTitle, blog, category) {
+  const newBlog = await blogs.create({ userId, blogTitle, blog, category });
+  return newBlog;
+}
+
+async function updateBlog(userId, blogId, blogTitle, blog, category) {
+  const existingBlog = await blogs.findOne({ where: { id: blogId } });
+
+  if (!existingBlog) {
+    console.log("blog not found");
+    return null;
+  }
+
+  if (existingBlog.userId !== userId) {
+    console.log("You are not authorized to update this blog");
+    return null;
+  }
+
+  existingBlog.blogTitle = blogTitle;
+  existingBlog.blog = blog;
+  existingBlog.category = category;
+  await existingBlog.save();
+
+  return existingBlog;
+}
+
+async function deleteBlog(userId, blogId) {
+  const existingBlog = await blogs.findOne({ where: { id: blogId } });
+
+  if (!existingBlog) {
+    console.log("Blog not found");
+    return null;
+  }
+
+  if (existingBlog.userId !== userId) {
+    console.log("You are not authorized to delete this blog");
+    return null;
+  }
+
+  await existingBlog.destroy();
+  return true;
+}
+
+export {
+  userRegistration,
+  userLogin,
+  getUserBlogs,
+  searchBlog,
+  createBlog,
+  updateBlog,
+  deleteBlog,
+};
