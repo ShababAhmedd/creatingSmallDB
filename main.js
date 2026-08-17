@@ -6,6 +6,9 @@ import {
   createBlog,
   updateBlog,
   deleteBlog,
+  allBlog,
+  allUsers,
+  allUserBlogs,
 } from "./index.js";
 import { closeDB, initDB } from "./db.js";
 import readline from "readline";
@@ -25,6 +28,51 @@ function askQuestion(query) {
       resolve(answer);
     });
   });
+}
+
+async function adminMenu(loggedInUser) {
+  let exit = false;
+
+  while (!exit) {
+    const choice = (
+      await askQuestion(
+        "\nAdmin Menu:\n1. View All Users\n2. View All Blogs\n3. Search Blog by ID/Title\n4. Update User\n5. Delete User\n6. Delete Blog\n7. Logout\n",
+      )
+    ).trim();
+
+    if (choice == 1) {
+      const users = await allUsers();
+      users.forEach((user) => {
+        console.log(
+          `ID: ${user.id} - First Name: ${user.firstName} - Last Name: ${user.lastName} - Email: ${user.email} - Active: ${user.isActive} - Role: ${user.role}`,
+        );
+      });
+    } else if (choice == 2) {
+      const allBlogsList = await allUserBlogs();
+      if (allBlogsList.length == 0) {
+        console.log("No blogs are found");
+      } else {
+        allBlogsList.forEach((blog) => {
+          console.log(
+            `ID: ${blog.id} - Title: ${blog.blogTitle} - User ID: ${blog.userId}`,
+          );
+        });
+      }
+    } else if (choice == 3) {
+      // Search Blog by ID/Title - Part 5
+    } else if (choice == 4) {
+      // Update User - Part 5
+    } else if (choice == 5) {
+      // Delete User - Part 5
+    } else if (choice == 6) {
+      // Delete Blog - Part 5
+    } else if (choice == 7) {
+      console.log("Logging out...");
+      exit = true;
+    } else {
+      console.log("Invalid Option");
+    }
+  }
 }
 
 async function userMenu(loggedInUser) {
@@ -101,7 +149,16 @@ async function main() {
   ).trim();
 
   if (option == 1) {
-    // View All Blogs - to be implemented later
+    const blogList = await allBlog();
+
+    if (blogList.length === 0) {
+      console.log("No blogs are found");
+    } else {
+      console.log("\nAll Blogs");
+      blogList.forEach((blog) => {
+        console.log(`ID: ${blog.id} - Title: ${blog.blogTitle}`);
+      });
+    }
   } else if (option == 2) {
     const email = await askQuestion("Please enter your email: ");
     const password = await askQuestion("Please enter your password: ");
@@ -109,7 +166,11 @@ async function main() {
     if (login) {
       console.log(`Welcome back, ${login.firstName}!`);
       console.log(`Role: ${login.role}`);
-      await userMenu(login);
+      if (login.role == "admin") {
+        await adminMenu(login);
+      } else {
+        await userMenu(login);
+      }
     }
   } else if (option == 3) {
     const firstName = await askQuestion("Enter your first name: ");

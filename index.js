@@ -102,6 +102,21 @@ async function deleteBlog(userId, blogId) {
   return true;
 }
 
+async function allBlog() {
+  const allBlogs = await blogs.findAll();
+  return allBlogs;
+}
+
+async function allUsers() {
+  const users = await user.findAll();
+  return users;
+}
+
+async function allUserBlogs() {
+  const allBlogs = await blogs.findAll();
+  return allBlogs;
+}
+
 export {
   userRegistration,
   userLogin,
@@ -110,4 +125,7 @@ export {
   createBlog,
   updateBlog,
   deleteBlog,
+  allBlog,
+  allUsers,
+  allUserBlogs,
 };
