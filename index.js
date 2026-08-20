@@ -2,13 +2,7 @@ import { where } from "sequelize";
 import { user, blogs } from "./db.js";
 import { Op } from "sequelize";
 
-async function userRegistration(
-  firstName,
-  lastName,
-  email,
-  phoneNumber,
-  password,
-) {
+async function userRegistration(firstName, lastName, email, password) {
   const existing = await user.findOne({ where: { email } });
   if (existing) {
     console.log("User already exists");
@@ -18,7 +12,6 @@ async function userRegistration(
     firstName,
     lastName,
     email,
-    phoneNumber,
     password,
   });
   return newUser;
@@ -85,12 +78,17 @@ async function updateBlog(userId, blogId, blogTitle, blog, category) {
   return existingBlog;
 }
 
-async function deleteBlog(userId, blogId) {
+async function deleteBlog(userId, role, blogId) {
   const existingBlog = await blogs.findOne({ where: { id: blogId } });
 
   if (!existingBlog) {
     console.log("Blog not found");
     return null;
+  }
+
+  if (role == "admin") {
+    await existingBlog.destroy();
+    return true;
   }
 
   if (existingBlog.userId !== userId) {
@@ -117,6 +115,31 @@ async function allUserBlogs() {
   return allBlogs;
 }
 
+async function updateUserStatus(userId, isActive) {
+  const existingUser = await user.findOne({ where: { id: userId } });
+
+  if (!existingUser) {
+    console.log("User not found");
+    return null;
+  }
+
+  existingUser.isActive = isActive;
+  await existingUser.save();
+
+  return existingUser;
+}
+
+async function deleteUser(userId) {
+  const existingUser = await user.findOne({ where: { id: userId } });
+
+  if (!existingUser) {
+    console.log("User not found");
+    return null;
+  }
+  await existingUser.destroy();
+  return true;
+}
+
 export {
   userRegistration,
   userLogin,
@@ -128,4 +151,6 @@ export {
   allBlog,
   allUsers,
   allUserBlogs,
+  updateUserStatus,
+  deleteUser,
 };

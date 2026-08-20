@@ -9,6 +9,8 @@ import {
   allBlog,
   allUsers,
   allUserBlogs,
+  updateUserStatus,
+  deleteUser,
 } from "./index.js";
 import { closeDB, initDB } from "./db.js";
 import readline from "readline";
@@ -59,13 +61,38 @@ async function adminMenu(loggedInUser) {
         });
       }
     } else if (choice == 3) {
-      // Search Blog by ID/Title - Part 5
+      const searchTerm = (await askQuestion("Enter blog ID or title: ")).trim();
+      const blog = await searchBlog(searchTerm);
+      if (!blog) {
+        console.log("No blog found");
+      } else {
+        console.log(
+          `\nID: ${blog.id}\nTitle: ${blog.blogTitle}\nCategory: ${blog.category}\nContent: ${blog.blog}\nUser ID: ${blog.userId}`,
+        );
+      }
     } else if (choice == 4) {
-      // Update User - Part 5
+      const userID = (await askQuestion("Enter user ID to update: ")).trim();
+      const statusInput = (
+        await askQuestion("Set isActive (true/false): ")
+      ).trim();
+      const isActive = statusInput === "true";
+      const updated = await updateUserStatus(userID, isActive);
+
+      if (updated) {
+        console.log("User status updated successfully");
+      }
     } else if (choice == 5) {
-      // Delete User - Part 5
+      const userID = (await askQuestion("Enter user ID to delete: ")).trim();
+      const deleted = await deleteUser(userID);
+      if (deleted) {
+        console.log("User deleted successfully");
+      }
     } else if (choice == 6) {
-      // Delete Blog - Part 5
+      const blogId = (await askQuestion("Enter blog ID to delete: ")).trim();
+      const deleted = await deleteBlog(loggedInUser.id, loggedInUser.role, blogId);
+      if (deleted) {
+        console.log("Blog deleted successfully");
+      }
     } else if (choice == 7) {
       console.log("Logging out...");
       exit = true;
@@ -128,7 +155,7 @@ async function userMenu(loggedInUser) {
       }
     } else if (choise == 5) {
       const blogId = (await askQuestion("Enter blog ID to delete: ")).trim();
-      const deleted = await deleteBlog(loggedInUser.id, blogId);
+      const deleted = await deleteBlog(loggedInUser.id, loggedInUser.role, blogId);
       if (deleted) {
         console.log("Blog deleted successfully");
       }
@@ -176,10 +203,9 @@ async function main() {
     const firstName = await askQuestion("Enter your first name: ");
     const lastName = await askQuestion("Enter your last name: ");
     const email = await askQuestion("Enter your email: ");
-    const phone = await askQuestion("Enter your phone number: ");
     const password = await askQuestion("Enter your password: ");
 
-    await userRegistration(firstName, lastName, email, phone, password);
+    await userRegistration(firstName, lastName, email, password);
   } else {
     console.log("Invalid Option");
   }
