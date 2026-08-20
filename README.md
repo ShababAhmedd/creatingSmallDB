@@ -2,6 +2,10 @@
 
 A console-based blog management application built with Node.js and MySQL. Users can register, log in, and manage their own blogs, while admins can manage all users and blogs across the system.
 
+## Demo Video
+
+Watch a walkthrough of the project here: [https://youtu.be/Xzco2Ruo0ik](https://youtu.be/Xzco2Ruo0ik)
+
 ## Features
 
 - View all blogs without logging in
@@ -55,6 +59,38 @@ A console-based blog management application built with Node.js and MySQL. Users 
    ```
 
    Make sure the database (e.g. `blogdb`) exists in your MySQL server before running the app. The `users` and `blogs` tables are created automatically on startup.
+
+## Database Information
+
+The app expects a MySQL database named `blogdb` with two tables, auto-created and synced by Sequelize on startup.
+
+**users**
+
+| Column     | Description                                      |
+| ---------- | ------------------------------------------------- |
+| id         | Primary key, auto-increment                        |
+| firstName  | Required                                           |
+| lastName   | Optional                                           |
+| email      | Required                                           |
+| password   | Required                                           |
+| isActive   | Defaults to `true`; `false` blocks login           |
+| role       | Defaults to `user`; set to `admin` for admin access |
+| createdAt  | Timestamp, managed by Sequelize                    |
+| updatedAt  | Timestamp, managed by Sequelize                    |
+
+**blogs**
+
+| Column     | Description                          |
+| ---------- | ------------------------------------- |
+| id         | Primary key, auto-increment           |
+| userId     | References the owning user's `id`     |
+| blogTitle  | Required                              |
+| blog       | Blog content, required                |
+| category   | Required                              |
+| createdAt  | Timestamp, managed by Sequelize       |
+| updatedAt  | Timestamp, managed by Sequelize       |
+
+**Relationship:** One-to-many — a single user can create multiple blogs, and each blog belongs to exactly one user via `blogs.userId`.
 
 ## Running the Project
 

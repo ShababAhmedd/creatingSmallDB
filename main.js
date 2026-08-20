@@ -89,7 +89,11 @@ async function adminMenu(loggedInUser) {
       }
     } else if (choice == 6) {
       const blogId = (await askQuestion("Enter blog ID to delete: ")).trim();
-      const deleted = await deleteBlog(loggedInUser.id, loggedInUser.role, blogId);
+      const deleted = await deleteBlog(
+        loggedInUser.id,
+        loggedInUser.role,
+        blogId,
+      );
       if (deleted) {
         console.log("Blog deleted successfully");
       }
@@ -155,7 +159,11 @@ async function userMenu(loggedInUser) {
       }
     } else if (choise == 5) {
       const blogId = (await askQuestion("Enter blog ID to delete: ")).trim();
-      const deleted = await deleteBlog(loggedInUser.id, loggedInUser.role, blogId);
+      const deleted = await deleteBlog(
+        loggedInUser.id,
+        loggedInUser.role,
+        blogId,
+      );
       if (deleted) {
         console.log("Blog deleted successfully");
       }
@@ -205,7 +213,15 @@ async function main() {
     const email = await askQuestion("Enter your email: ");
     const password = await askQuestion("Enter your password: ");
 
-    await userRegistration(firstName, lastName, email, password);
+    const newUser = await userRegistration(
+      firstName,
+      lastName,
+      email,
+      password,
+    );
+    if (newUser) {
+      console.log("New User created.");
+    }
   } else {
     console.log("Invalid Option");
   }
